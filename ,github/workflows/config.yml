@@ -1,0 +1,46 @@
+name: Selenium Tests
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12.6'  
+
+      - name: Install dependencies
+        run: |
+          pip install selenium
+          sudo apt-get install -y chromium-chromedriver
+          sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
+          # Install any other necessary libraries here
+
+      - name: Run Selenium Test
+        run: |
+          python test_RegistrationMonthly.py 
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: test_results.csv  
+
+      - name: Upload Screenshots
+        uses: actions/upload-artifact@v2
+        with:
+          name: screenshots
+          path: |
+            before_submit.png
+            after_submit.png  # Upload screenshots from the test
